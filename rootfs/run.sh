@@ -67,12 +67,10 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
                     bashio::log.info "  Using proxy: $PROXY"
                 fi
             fi
-            bashio::log.info "  Fetching from HP CDN..."
+            bashio::log.info "  Fetching from OpenPrinting..."
             set +e
             wget -v -O "$PLUGIN_FILE" \
-                --header="Referer: https://developers.hp.com/" \
-                --user-agent="Mozilla/5.0" \
-                "https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run" 2>&1
+                "http://www.openprinting.org/download/printdriver/auxfiles/HP/plugins/hplip-${HPLIP_VER}-plugin.run" 2>&1
             WGET_RC=$?
             set -e
             bashio::log.info "  wget exit code: $WGET_RC"
