@@ -52,7 +52,7 @@ jobs:
           push: true
           platforms: ${{ steps.plat.outputs.val }}
           tags: |
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-${{ matrix.ha_arch }}
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-${{ matrix.ha_arch }}
           provenance: false
           build-args: |
             ADDON_VERSION=${{ steps.ver.outputs.val }}
@@ -76,17 +76,17 @@ jobs:
       - name: Create multi-arch manifest (version)
         run: |
           docker buildx imagetools create \
-            --tag ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }} \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-amd64 \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-aarch64 \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-armv7
+            --tag ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }} \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-aarch64 \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-armv7
 
       - name: Create multi-arch manifest (latest)
         run: |
           docker buildx imagetools create \
-            --tag ghcr.io/vtechs-ja/ha-cups-sane-addon:latest \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-amd64 \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-aarch64 \
-            ghcr.io/vtechs-ja/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-armv7
+            --tag ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:latest \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-aarch64 \
+            ghcr.io/${{ github.repository_owner }}/ha-cups-sane-addon:${{ steps.ver.outputs.val }}-armv7
 
 
