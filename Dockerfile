@@ -47,7 +47,6 @@ RUN set -e \
         cups-pdf \
         colord \
         # Minimal printer drivers (configurable at runtime)
-        printer-driver-hpcups \
         printer-driver-brlaser \
         # Network discovery packages
         avahi-daemon \

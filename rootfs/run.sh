@@ -32,8 +32,11 @@ PRINTER_SUPPORT=$(bashio::config 'printer_support' 'full')
 if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
     PRINTER_PACKAGES=""
     case $PRINTER_SUPPORT in
+        minimal)
+            PRINTER_PACKAGES="printer-driver-hpcups"
+            ;;
         common)
-            PRINTER_PACKAGES="printer-driver-escpr printer-driver-splix openprinting-ppds"
+            PRINTER_PACKAGES="printer-driver-hpcups printer-driver-escpr printer-driver-splix openprinting-ppds"
             ;;
         full)
             PRINTER_PACKAGES="printer-driver-all-enforce openprinting-ppds hpijs-ppds hp-ppd hplip"
