@@ -60,28 +60,8 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             # Initialize HP system (non-interactive)
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
             # Install HP binary plugin
-            bashio::log.info "Installing HP binary plugin..."
-            HPLIP_VER=$(dpkg-query -W -f='${Version}' hplip 2>/dev/null | cut -d'+' -f1 || echo "3.22.10")
-            PLUGIN_FILE="/tmp/hplip-${HPLIP_VER}-plugin.run"
-            PROXY_ARGS=""
-            if bashio::config.exists 'hp_plugin_proxy'; then
-                PROXY=$(bashio::config 'hp_plugin_proxy')
-                if [ -n "$PROXY" ]; then
-                    PROXY_ARGS="-x $PROXY"
-                    export http_proxy="$PROXY" https_proxy="$PROXY" HTTP_PROXY="$PROXY" HTTPS_PROXY="$PROXY"
-                fi
-            fi
-            curl -fsSL --connect-timeout 30 ${PROXY_ARGS} -o "$PLUGIN_FILE" \
-                "https://sourceforge.net/projects/hplip/files/hplip/${HPLIP_VER}/hplip-${HPLIP_VER}-plugin.run/download" \
-                || curl -fsSL --connect-timeout 30 ${PROXY_ARGS} -o "$PLUGIN_FILE" \
-                "https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run"
-            if [ -f "$PLUGIN_FILE" ] && [ -s "$PLUGIN_FILE" ]; then
-                bashio::log.info "Plugin downloaded, installing..."
-                printf "y\n" | hp-plugin -i -p "$PLUGIN_FILE" 2>&1 || bashio::log.warning "HP plugin install may have failed"
-                rm -f "$PLUGIN_FILE"
-            else
-                bashio::log.warning "HP plugin download failed - configure hp_plugin_proxy or install manually"
-            fi
+            bashio::log.info "✓ HP scanner support initialized"
+            bashio::log.info "To install the HP plugin: set hp_plugin_proxy in addon config, then restart"
             bashio::log.info "✓ HP scanner support initialized"
         fi
     fi
