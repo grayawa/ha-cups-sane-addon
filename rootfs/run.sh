@@ -61,7 +61,23 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
             # Install HP binary plugin
             bashio::log.info "Installing HP binary plugin..."
-            printf "d\ny\ny\n" | timeout 120 hp-plugin -i 2>&1 || bashio::log.warning "HP plugin install may have failed"
+            HPLIP_VER=$(dpkg-query -W -f='${Version}' hplip 2>/dev/null | cut -d'+' -f1 || echo "3.22.10")
+            HPLIP_VER_MAJOR=$(echo "$HPLIP_VER" | cut -d'.' -f1,2)
+            PLUGIN_FILE="/tmp/hplip-${HPLIP_VER}-plugin.run"
+            # Try gh-proxy first, then fallback to direct
+            curl -fsSL --connect-timeout 10 -o "$PLUGIN_FILE" \
+                "https://gh-proxy.org/https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run" \
+                || curl -fsSL --connect-timeout 10 -o "$PLUGIN_FILE" \
+                "https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run" \
+                || curl -fsSL --connect-timeout 10 -o "$PLUGIN_FILE" \
+                "https://sourceforge.net/projects/hplip/files/hplip/${HPLIP_VER}/hplip-${HPLIP_VER}-plugin.run/download"
+            if [ -f "$PLUGIN_FILE" ] && [ -s "$PLUGIN_FILE" ]; then
+                bashio::log.info "Plugin downloaded, installing..."
+                printf "y\n" | hp-plugin -i -p "$PLUGIN_FILE" 2>&1 || bashio::log.warning "HP plugin install may have failed"
+                rm -f "$PLUGIN_FILE"
+            else
+                bashio::log.warning "HP plugin download failed - scanner may not work"
+            fi
             bashio::log.info "✓ HP scanner support initialized"
         fi
     fi
