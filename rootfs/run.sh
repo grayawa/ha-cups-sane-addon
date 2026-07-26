@@ -49,6 +49,9 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             mkdir -p /etc/hp /var/lib/hp
             # Initialize HP system (non-interactive)
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
+            # Install HP binary plugin
+            bashio::log.info "Installing HP binary plugin..."
+            hp-plugin -i -n 2>&1 || bashio::log.warning "HP plugin install may have failed"
             bashio::log.info "✓ HP scanner support initialized"
         fi
     fi
