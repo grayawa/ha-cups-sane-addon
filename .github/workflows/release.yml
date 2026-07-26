@@ -57,6 +57,7 @@ jobs:
           build-args: |
             ADDON_VERSION=${{ steps.ver.outputs.val }}
             BUILD_ARCH=${{ matrix.ha_arch }}
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.ha_arch }}-base-debian:bookworm
 
   manifest:
     needs: build
