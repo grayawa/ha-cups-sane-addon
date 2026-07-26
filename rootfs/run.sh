@@ -59,9 +59,16 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             mkdir -p /etc/hp /var/lib/hp
             # Initialize HP system (non-interactive)
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
-            # Install HP binary plugin
             bashio::log.info "✓ HP scanner support initialized"
-            bashio::log.info "To install the HP plugin: set hp_plugin_proxy in addon config, then restart"
+            # Install HP binary plugin if proxy is configured
+            if bashio::config.exists 'hp_plugin_proxy'; then
+                PROXY=$(bashio::config 'hp_plugin_proxy')
+                if [ -n "$PROXY" ]; then
+                    bashio::log.info "Installing HP binary plugin via proxy..."
+                    export http_proxy="$PROXY" https_proxy="$PROXY" HTTP_PROXY="$PROXY" HTTPS_PROXY="$PROXY"
+                    printf "d\ny\ny\n" | hp-plugin -i 2>&1 || bashio::log.warning "HP plugin install failed"
+                fi
+            fi
             bashio::log.info "✓ HP scanner support initialized"
         fi
     fi
