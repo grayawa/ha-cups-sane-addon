@@ -62,12 +62,24 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             PLUGIN_FILE="/tmp/hplip-${HPLIP_VER}-plugin.run"
             if bashio::config.exists 'hp_plugin_proxy'; then
                 PROXY=$(bashio::config 'hp_plugin_proxy')
-                [ -n "$PROXY" ] && export http_proxy="$PROXY" https_proxy="$PROXY"
+                if [ -n "$PROXY" ]; then
+                    export http_proxy="$PROXY" https_proxy="$PROXY"
+                    bashio::log.info "  Using proxy: $PROXY"
+                fi
             fi
-            wget -q -O "$PLUGIN_FILE" \
+            bashio::log.info "  Fetching from HP CDN..."
+            set +e
+            wget -v -O "$PLUGIN_FILE" \
                 --header="Referer: https://developers.hp.com/" \
                 --user-agent="Mozilla/5.0" \
-                "https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run" 2>&1 || true
+                "https://developers.hp.com/sites/default/files/hplip-${HPLIP_VER}-plugin.run" 2>&1
+            WGET_RC=$?
+            set -e
+            bashio::log.info "  wget exit code: $WGET_RC"
+            if [ -f "$PLUGIN_FILE" ]; then
+                bashio::log.info "  File size: $(stat -c%s "$PLUGIN_FILE" 2>/dev/null || wc -c < "$PLUGIN_FILE") bytes"
+                head -c 200 "$PLUGIN_FILE" 2>&1
+            fi
             if [ -f "$PLUGIN_FILE" ] && [ -s "$PLUGIN_FILE" ]; then
                 bashio::log.info "Installing HP binary plugin..."
                 printf "y\ny\n" | hp-plugin -i -p "$PLUGIN_FILE" 2>&1 || bashio::log.warning "HP plugin install failed"
