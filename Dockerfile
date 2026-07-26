@@ -87,7 +87,6 @@ RUN set -e \
         /usr/share/man/* \
         /usr/share/info/* \
         /var/cache/debconf/* \
-        /var/lib/dpkg/info/*.list \
     && rm -rf /root/.npm /home/*/.npm \
     && rm -rf /var/cache/* /root/.cache \
     && chmod a+x /run.sh
