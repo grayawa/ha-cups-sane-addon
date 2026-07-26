@@ -23,8 +23,8 @@ COPY rootfs /
 RUN set -e \
     # Use TUNA mirror when USE_CHINA_MIRRORS is set
     && if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
-         sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
-         sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list; \
+         sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list 2>/dev/null || true; \
+         sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list 2>/dev/null || true; \
        fi \
     # Package installation
     && apt-get update \
