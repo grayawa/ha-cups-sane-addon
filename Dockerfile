@@ -23,13 +23,13 @@ COPY rootfs /
 RUN set -e \
     # Use TUNA mirror when USE_CHINA_MIRRORS is set
     && if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
-         if [ -f /etc/apt/sources.list ]; then \
-           sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
-           sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list; \
+          if [ -f /etc/apt/sources.list ]; then \
+            sed -i -E 's|https?://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
+            sed -i -E 's|https?://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list; \
          fi; \
-         if ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1; then \
-           sed -i 's|URIs: http://deb.debian.org/debian|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list.d/*.sources; \
-           sed -i 's|URIs: http://security.debian.org/debian-security|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list.d/*.sources; \
+          if ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1; then \
+            sed -i -E 's|URIs: https?://deb.debian.org/debian|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list.d/*.sources; \
+            sed -i -E 's|URIs: https?://security.debian.org/debian-security|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list.d/*.sources; \
          fi; \
        fi \
     # Package installation
@@ -41,6 +41,7 @@ RUN set -e \
         netcat-openbsd \
         nodejs \
         curl \
+        gnupg \
         # CUPS printing packages
         cups \
         cups-pdf \

@@ -19,12 +19,12 @@ bashio::log.info "Initializing print and scan services..."
 
 # Use TUNA mirror for runtime apt (supports both traditional and deb822 format)
 if [ -f /etc/apt/sources.list ]; then
-    sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list
-    sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list
+    sed -i -E 's|https?://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list
+    sed -i -E 's|https?://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list
 fi
 if ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1; then
-    sed -i 's|URIs: http://deb.debian.org/debian|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list.d/*.sources
-    sed -i 's|URIs: http://security.debian.org/debian-security|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list.d/*.sources
+    sed -i -E 's|URIs: https?://deb.debian.org/debian|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list.d/*.sources
+    sed -i -E 's|URIs: https?://security.debian.org/debian-security|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list.d/*.sources
 fi
 
 # Install additional printer drivers if configured (runtime optimization)
@@ -42,9 +42,9 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
     
     if [[ -n "$PRINTER_PACKAGES" ]]; then
         bashio::log.info "Installing $PRINTER_SUPPORT printer drivers..."
-        apt-get update > /dev/null 2>&1
-        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PRINTER_PACKAGES > /dev/null 2>&1
-        apt-get clean > /dev/null 2>&1
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PRINTER_PACKAGES
+        apt-get clean > /dev/null 2>&1 || true
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
         bashio::log.info "✓ Additional printer drivers installed"
         
@@ -73,9 +73,9 @@ if bashio::config.exists 'ocr_languages'; then
     
     if [[ -n "$PACKAGES" ]]; then
         bashio::log.info "Installing additional OCR languages..."
-        apt-get update > /dev/null 2>&1
-        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PACKAGES > /dev/null 2>&1
-        apt-get clean > /dev/null 2>&1
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PACKAGES
+        apt-get clean > /dev/null 2>&1 || true
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
         bashio::log.info "✓ OCR languages installed"
     fi
