@@ -20,9 +20,11 @@ COPY rootfs /
 
 # Single optimized layer with package installation and scanservjs setup
 RUN set -e \
-    # Use TUNA mirror
-    && sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list \
-    && sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list \
+    # Use TUNA mirror if reachable, else fallback to default Debian mirrors
+    && (curl -s --connect-timeout 3 https://mirrors.tuna.tsinghua.edu.cn > /dev/null 2>&1 && \
+        sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
+        sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list) \
+        || echo "TUNA unreachable, using default mirrors" \
     # Package installation
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -54,7 +56,7 @@ RUN set -e \
         tesseract-ocr \
         tesseract-ocr-eng \
     # Download and install scanservjs with retry logic
-    && (curl -fsSL "https://gh-proxy.org/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
+    && (curl -fsSL "https://gh-proxy.com/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
         curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb) \
     && dpkg -i /tmp/scanservjs.deb \
     # Create user with minimal setup
