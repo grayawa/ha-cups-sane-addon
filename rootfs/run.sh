@@ -17,9 +17,15 @@ echo "$config" | tempio -template /usr/share/sane.conf.tempio -out /etc/sane.d/s
 
 bashio::log.info "Initializing print and scan services..."
 
-# Use TUNA mirror for runtime apt
-sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list 2>/dev/null || true
-sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list 2>/dev/null || true
+# Use TUNA mirror for runtime apt (supports both traditional and deb822 format)
+if [ -f /etc/apt/sources.list ]; then
+    sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list
+    sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list
+fi
+if ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1; then
+    sed -i 's|URIs: http://deb.debian.org/debian|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list.d/*.sources
+    sed -i 's|URIs: http://security.debian.org/debian-security|URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list.d/*.sources
+fi
 
 # Install additional printer drivers if configured (runtime optimization)
 PRINTER_SUPPORT=$(bashio::config 'printer_support' 'full')
