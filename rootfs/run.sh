@@ -56,6 +56,12 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
         if echo "$PRINTER_PACKAGES" | grep -q "hplip"; then
             bashio::log.info "Initializing HP scanner support..."
             mkdir -p /etc/hp /var/lib/hp
+            # Pre-accept plugin EULA to skip interactive prompts
+            cat > /etc/hp/hplip.conf << 'HPEOF'
+[plugin]
+installed=1
+eula=1
+HPEOF
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
             bashio::log.info "Installing HP binary plugin..."
             if bashio::config.exists 'hp_plugin_proxy'; then
