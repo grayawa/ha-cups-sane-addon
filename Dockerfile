@@ -1,5 +1,6 @@
 ARG BUILD_ARCH=amd64
 ARG BUILD_FROM=ghcr.nju.edu.cn/home-assistant/${BUILD_ARCH}-base-debian:bookworm
+ARG USE_CHINA_MIRRORS=true
 FROM ${BUILD_FROM}
 
 # Propagate add-on version into image labels via build arg
@@ -20,11 +21,11 @@ COPY rootfs /
 
 # Single optimized layer with package installation and scanservjs setup
 RUN set -e \
-    # Use TUNA mirror if reachable, else fallback to default Debian mirrors
-    && (curl -s --connect-timeout 3 https://mirrors.tuna.tsinghua.edu.cn > /dev/null 2>&1 && \
-        sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
-        sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list) \
-        || echo "TUNA unreachable, using default mirrors" \
+    # Use TUNA mirror when USE_CHINA_MIRRORS is set
+    && if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
+         sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list; \
+         sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list; \
+       fi \
     # Package installation
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -55,9 +56,13 @@ RUN set -e \
         # OCR support (minimal, configurable)
         tesseract-ocr \
         tesseract-ocr-eng \
-    # Download and install scanservjs with retry logic
-    && (curl -fsSL "https://gh-proxy.com/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
-        curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb) \
+    # Download and install scanservjs
+    && if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
+         (curl -fsSL "https://gh-proxy.com/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
+          curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb); \
+       else \
+         curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb; \
+       fi \
     && dpkg -i /tmp/scanservjs.deb \
     # Create user with minimal setup
     && useradd --groups=sudo,lp,lpadmin --create-home --home-dir=/home/print --shell=/bin/bash print \
