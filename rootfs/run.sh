@@ -43,6 +43,7 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
     if [[ -n "$PRINTER_PACKAGES" ]]; then
         bashio::log.info "Installing $PRINTER_SUPPORT printer drivers..."
         apt-get update
+        apt-get upgrade -y
         DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PRINTER_PACKAGES
         apt-get clean > /dev/null 2>&1 || true
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -74,6 +75,7 @@ if bashio::config.exists 'ocr_languages'; then
     if [[ -n "$PACKAGES" ]]; then
         bashio::log.info "Installing additional OCR languages..."
         apt-get update
+        apt-get upgrade -y
         DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends $PACKAGES
         apt-get clean > /dev/null 2>&1 || true
         rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
