@@ -20,6 +20,9 @@ COPY rootfs /
 
 # Single optimized layer with package installation and scanservjs setup
 RUN set -e \
+    # Use TUNA mirror
+    && sed -i 's|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g' /etc/apt/sources.list \
+    && sed -i 's|http://security.debian.org|https://mirrors.tuna.tsinghua.edu.cn/debian-security|g' /etc/apt/sources.list \
     # Package installation
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
