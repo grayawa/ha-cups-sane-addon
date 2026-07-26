@@ -61,7 +61,7 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             /usr/bin/hp-setup --help > /dev/null 2>&1 || true
             # Install HP binary plugin
             bashio::log.info "Installing HP binary plugin..."
-            yes "" | hp-plugin -i 2>&1 || bashio::log.warning "HP plugin install may have failed"
+            printf "d\ny\ny\n" | timeout 120 hp-plugin -i 2>&1 || bashio::log.warning "HP plugin install may have failed"
             bashio::log.info "✓ HP scanner support initialized"
         fi
     fi
