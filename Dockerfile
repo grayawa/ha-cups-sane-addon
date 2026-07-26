@@ -41,6 +41,7 @@ RUN set -e \
         netcat-openbsd \
         nodejs \
         curl \
+        wget \
         gnupg \
         # CUPS printing packages
         cups \
