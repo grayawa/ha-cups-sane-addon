@@ -58,7 +58,7 @@ RUN set -e \
         tesseract-ocr-eng \
     # Download and install scanservjs
     && if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
-         (curl -fsSL "https://gh-proxy.com/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
+         (curl -fsSL "https://gh-proxy.org/https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb || \
           curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb); \
        else \
          curl -fsSL "https://github.com/sbs20/scanservjs/releases/download/v3.0.3/scanservjs_3.0.3-1_all.deb" -o /tmp/scanservjs.deb; \
