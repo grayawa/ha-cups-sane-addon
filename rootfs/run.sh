@@ -80,7 +80,7 @@ if [[ "$PRINTER_SUPPORT" != "minimal" ]]; then
             fi
             if [ -f "$PLUGIN_FILE" ] && [ -s "$PLUGIN_FILE" ]; then
                 bashio::log.info "Installing HP binary plugin..."
-                printf "y\ny\n" | hp-plugin -i -p "$PLUGIN_FILE" 2>&1 || bashio::log.warning "HP plugin install failed"
+                printf "y\ny\ny\n" | hp-plugin -i -p "$PLUGIN_FILE" 2>&1 || bashio::log.warning "HP plugin install failed"
                 rm -f "$PLUGIN_FILE"
             else
                 bashio::log.warning "HP plugin download failed - configure hp_plugin_proxy if needed"
